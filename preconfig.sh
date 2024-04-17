@@ -19,5 +19,7 @@ mount /dev/disk/by-label/nixos /mnt
 lsblk
 echo =================
 #
-nixos-generate-config --root /mnt && vim /mnt/etc/nixos/configuration.nix
-#
+nixos-generate-config --root /mnt
+read -p "Disks partition succesfully, press any key to edit configuration.nix..."
+vim /mnt/etc/nixos/configuration.nix
+# nixos-install
