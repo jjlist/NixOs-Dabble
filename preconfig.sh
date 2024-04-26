@@ -2,23 +2,24 @@
 echo =================
 lsblk
 echo =================
-parted /dev/sda -- mklabel gpt
-parted /dev/sda -- mkpart ESP fat32 1MiB 513MiB
-parted /dev/sda -- set 1 esp on
-parted /dev/sda -- mkpart home ext4 -300GiB 100%
-parted /dev/sda -- mkpart root ext4 513MiB 100% #-8GB
-#parted /dev/sda -- mkpart swap linux-swap -8GB 100%
+disk="$1"
+parted $disk -- mklabel gpt
+parted $disk -- mkpart ESP fat32 1MiB 513MiB
+parted $disk -- set 1 esp on
+parted $disk -- mkpart home ext4 -300GiB 100%
+parted $disk -- mkpart root ext4 513MiB 100% #-8GB
+#parted $disk -- mkpart swap linux-swap -8GB 100%
 lsblk
 echo =================
-mkfs.ext4 -L nixos /dev/sda3
-mount /dev/disk/by-label/nixos /mnt
-mkfs.ext4 -L home /dev/sda2
-mount /dev/disk/by-label/home /mnt/home
-#mkswap -L swap /dev/sda2
-#swapon /dev/sda2
-mkfs.fat -F 32 -n boot /dev/sda1
+mkfs.ext4 -L NIXOS "$disk"3
+mount /dev/disk/by-label/NIXOS /mnt
+mkfs.ext4 -L NIXHOME "$disk"2
+mount /dev/disk/by-label/NIXHOME /mnt/home
+#mkswap -L NIXSWAP "$disk"2
+#swapon "$disk"2
+mkfs.fat -F 32 -n NIXBOOT "$disk"1
 mkdir -p /mnt/boot
-mount -o umask=077 /dev/disk/by-label/boot /mnt/boot
+mount -o umask=077 /dev/disk/by-label/NIXBOOT /mnt/boot
 lsblk
 echo =================
 #
@@ -26,3 +27,4 @@ nixos-generate-config --root /mnt
 read -p "Disks partition succesfully, press any key to edit configuration.nix..."
 vim /mnt/etc/nixos/configuration.nix
 # nixos-install
+# reboot
